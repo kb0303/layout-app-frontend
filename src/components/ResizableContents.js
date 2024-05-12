@@ -17,7 +17,7 @@ const ResizableContents = () => {
 	// Function to fetch user data from the backend
 	const fetchUserData = async () => {
 		try {
-			const response = await fetch('http://localhost:8080/api/data1');
+			const response = await fetch('https://layout-app-backend.onrender.com/api/data1');
 			if (!response.ok) {
 				throw new Error('Failed to fetch user data');
 			}
