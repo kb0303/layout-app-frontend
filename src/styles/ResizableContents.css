@@ -1,0 +1,83 @@
+.flex {
+	display: flex;
+}
+
+
+.box1 img {
+	height: 180px;
+	width: auto;
+}
+
+
+.flex-column {
+	flex-direction: column;
+}
+
+.shrink-0 {
+	flex-shrink: 0;
+}
+
+.grow {
+	flex-grow: 1;
+}
+
+.h-screen {
+	height: 100vh;
+}
+
+.bg-darker {
+	background-color: #202020;
+}
+
+.bg-dark {
+	background-color: #2D3032;
+}
+
+.font-mono {
+	font-family: monospace;
+}
+
+.color-white {
+	color: white;
+}
+
+.overflow-hidden {
+	overflow: hidden;
+}
+
+.contents {
+	display: grid;
+	place-items: center;
+	transition: filter 0.2s ease-out, background-color 0.2s ease-out;
+	font-size: 16px;
+}
+
+.dragging {
+	/* filter: blur(5px); */
+	/* background-color: #555555; */
+}
+
+.btns {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.btns button {
+	padding: 10px;
+	border: none;
+	border-radius: 6px;
+	color: white;
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: bold;
+	font-size: 1rem;
+}
+
+.add-btn {
+	background-color: red;
+}
+
+.update-btn {
+	background-color: green;
+}
