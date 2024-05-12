@@ -22,7 +22,8 @@ const ResizableContents = () => {
 				throw new Error('Failed to fetch user data');
 			}
 			const userData = await response.json();
-			// Set the user data to the last element (assuming it's the latest added content)
+
+			// Setting the user data to the last element
 			if (Array.isArray(userData) && userData.length > 0) {
 				setUpdateData(userData[userData.length - 1]);
 			}
