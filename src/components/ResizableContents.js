@@ -69,7 +69,7 @@ const ResizableContents = () => {
 		const formData = new FormData(event.target);
 
 		try {
-			const url = updateData ? `http://localhost:8080/api/data1/${updateData._id}` : 'http://localhost:8080/api/data1/add';
+			const url = updateData ? `https://layout-app-backend.onrender.com/api/data1/${updateData._id}` : 'https://layout-app-backend.onrender.com/api/data1/add';
 			const method = updateData ? 'PUT' : 'POST';
 
 			const response = await fetch(url, {
