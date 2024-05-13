@@ -4,13 +4,20 @@ import { cn } from '../utils/cn';
 import Resizer from './Resizer';
 import UserData from './UserData';
 import SampleImg from '../sample.jpg';
+import Loader from './Loader';
 
 const ResizableContents = () => {
+    // State variables
     const [showModal, setShowModal] = useState(false); // State to manage modal visibility
     const [updateData, setUpdateData] = useState(null); // State to store data for update
+    const [alertMessage, setAlertMessage] = useState(null); // State to store alert message
+    const [alertType, setAlertType] = useState(null); // State to store alert type
+    const [imageLoading, setImageLoading] = useState(true); // State to track image loading
+    const [isLoading, setIsLoading] = useState(false); // State to track form submission loading
+    const [isResetting, setIsResetting] = useState(false); // State to track reset loading
 
+    // Fetch user data when showModal state changes
     useEffect(() => {
-        // Fetch user data from the backend when the component mounts
         fetchUserData();
     }, [showModal]);
 
@@ -23,7 +30,7 @@ const ResizableContents = () => {
             }
             const userData = await response.json();
 
-            // Setting the user data to the last element
+            // Set the user data to the last element
             if (Array.isArray(userData) && userData.length > 0) {
                 setUpdateData(userData[userData.length - 1]);
             }
@@ -32,6 +39,7 @@ const ResizableContents = () => {
         }
     };
 
+    // Function to handle modal opening
     const handleModal = (isUpdate) => {
         if (isUpdate) {
             setShowModal(true);
@@ -41,8 +49,10 @@ const ResizableContents = () => {
         }
     };
 
+    // Function to handle form submission
     const handleFormSubmit = async (event) => {
         event.preventDefault();
+        setIsLoading(true); // Set isLoading to true while sending the request
 
         const formData = new FormData(event.target);
 
@@ -59,13 +69,19 @@ const ResizableContents = () => {
                 throw new Error('Failed to save changes');
             }
             setShowModal(false);
+            const responseData = await response.json();
+            displayAlert(responseData.executionTime);
         } catch (error) {
             console.error('Error saving changes:', error);
+        } finally {
+            setIsLoading(false); // Set isLoading to false after request completes
         }
     };
 
     // Function to handle reset
     const handleReset = async () => {
+        setIsResetting(true); // Set isResetting to true while sending the request
+
         try {
             const response = await fetch('https://layout-app-backend.onrender.com/api/data1/reset', {
                 method: 'DELETE'
@@ -77,11 +93,31 @@ const ResizableContents = () => {
 
             // Reset user data
             setUpdateData(null);
+            const responseData = await response.json();
+            displayAlert(responseData.executionTime);
         } catch (error) {
             console.error('Error resetting data:', error);
+        } finally {
+            setIsResetting(false); // Set isResetting to false after request completes
         }
     };
 
+    // Function to display alert
+    const displayAlert = (executionTime) => {
+        setAlertType('info');
+        setAlertMessage(`Execution time: ${executionTime} ms`);
+        setTimeout(() => {
+            setAlertMessage(null);
+        }, 5000);
+    };
+
+    // Function to handle image load
+    const handleImageLoad = () => {
+        // Set imageLoading to false when the image is loaded
+        setImageLoading(false);
+    };
+
+    // Resizable layout hooks
     const {
         isDragging: isTerminalDragging,
         position: terminalH,
@@ -111,20 +147,28 @@ const ResizableContents = () => {
                     <div className={"flex grow"}>
                         <div className={"grow bg-darker contents box1"}>
                             {updateData ? (
-								<>
-                                <UserData
-                                    userData={updateData}
-                                    handleModal={handleModal}
-                                />
-								{/* Reset button */}
-								<button className="btn btn-danger reset-btn" onClick={handleReset}>Reset Data</button>
-								</>
+                                <>
+                                    <UserData
+                                        userData={updateData}
+                                        handleModal={handleModal}
+                                    />
+                                    {/* Reset button */}
+                                    <button className={`btn btn-danger reset-btn ${isResetting ? 'disabled' : ''}`} onClick={handleReset}>{isResetting ? <Loader /> : 'Reset Data'}</button>
+                                </>
                             ) : (
                                 <>
-                                    <img src={SampleImg} alt="User" />
-                                    <h3>Hello, My name is John Doe and I'm 18 years old living in New York City</h3>
+                                    {imageLoading && <Loader />} 
+                                    <img
+                                        src={SampleImg}
+                                        alt="User"
+                                        onLoad={handleImageLoad} // Call handleImageLoad when image is loaded
+                                        style={{ display: imageLoading ? 'none' : 'block' }} // Show image when loaded
+                                    />
+
+
+                                    <h3 className='w-50'>Hello, My name is John Doe and I'm 18 years old living in New York City</h3>
                                     <div className='btns'>
-                                        <button className='add-btn' onClick={() => handleModal()}>Add</button>
+                                        <button className={`add-btn ${isLoading ? 'disabled' : ''}`} onClick={() => handleModal()}>{isLoading ? <Loader /> : 'Add'}</button>
                                     </div>
                                 </>
                             )}
@@ -140,6 +184,13 @@ const ResizableContents = () => {
                     More Data
                 </div>
             </div>
+
+            {/* Alert */}
+            {alertMessage && (
+                <div className={`alert alert-${alertType} position-fixed bottom-0 end-0 m-3`} role="alert">
+                    {alertMessage}
+                </div>
+            )}
 
             {/* Modal */}
             <div className={`modal ${showModal ? 'show' : ''}`} tabIndex="-1" style={{ display: showModal ? 'block' : 'none' }}>
@@ -167,7 +218,12 @@ const ResizableContents = () => {
                                     <label htmlFor="imageUrl" className="form-label">Image Url</label>
                                     <input type="file" accept="images/*" className="form-control" id="imageUrl" name='imageUrl' />
                                 </div>
-                                <button type="submit" className="btn btn-primary">Save changes</button>
+                                {/* Conditional rendering for loader */}
+                                {isLoading ? (
+                                    <Loader />
+                                ) : (
+                                    <button type="submit" className="btn btn-primary">Save changes</button>
+                                )}
                             </form>
                         </div>
                     </div>

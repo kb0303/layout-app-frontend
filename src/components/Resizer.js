@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { cn } from '../utils/cn';
 
 const Resizer = ({ id = 'drag-bar', dir, isDragging, ...props }) => {
-	const [isFocused, setIsFocused] = useState(false);
+	const [isFocused, setIsFocused] = useState(false); // State to manage focus
 
 	return (
 		<div

@@ -6,6 +6,8 @@
 .box1 img {
 	height: 180px;
 	width: auto;
+	border-radius: 9px;
+    box-shadow: 0 0 8px 0 whitesmoke;
 }
 
 
